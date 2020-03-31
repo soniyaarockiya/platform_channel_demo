@@ -18,8 +18,13 @@ class _FormPageState extends State<FormPage> {
 
   void _formSubmission() async {
     if (_triggerAndroid.validateAndSave(formKey)) {
+      setState(() {
+        formKey.currentState.reset();
+      });
       await _triggerAndroid.showNotification();
-      formKey.currentState.reset();
+
+      //clear form after submission
+
     }
   }
 
@@ -34,45 +39,39 @@ class _FormPageState extends State<FormPage> {
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Form(
           key: formKey,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                TextFormField(
-                  decoration: InputDecoration(hintText: "Email",
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(
+                  hintText: "Email",
 //                  labelText: "Enter your email"
-                  ),
-
-                  validator: (value) =>
-                      value.isEmpty ? 'Email cant be empty' : null,
-                  onSaved: (value) => email = value,
                 ),
-                TextFormField(
-                  obscureText: true,
-                  decoration: InputDecoration(
+                validator: (value) =>
+                    value.isEmpty ? 'Email cant be empty' : null,
+                onSaved: (value) => email = value,
+              ),
+              TextFormField(
+                obscureText: true,
+                decoration: InputDecoration(
 //                    labelText: "Enter your email",
-                    hintText: "Password",
-                  ),
-                  validator: (value) =>
-                      value.isEmpty ? 'pass word cant be empty' : null,
-                  onSaved: (value) => password = value,
+                  hintText: "Password",
                 ),
-                RaisedButton(
-                  onPressed: _formSubmission,
-                  child: Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 20.0,
-                    ),
+                validator: (value) =>
+                    value.isEmpty ? 'pass word cant be empty' : null,
+                onSaved: (value) => password = value,
+              ),
+              RaisedButton(
+                onPressed: _formSubmission,
+                child: Text(
+                  'Login',
+                  style: TextStyle(
+                    fontSize: 20.0,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
