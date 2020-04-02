@@ -6,7 +6,6 @@ import 'Controller/triggerAndroid.dart';
 // https://www.youtube.com/watch?v=pwulMxlhdw8  ------- platform channel with android toast
 //https://www.youtube.com/watch?v=Qo2IxY9eDhw  ------- android notifications with channel for android 8.0 and above
 
-
 class FormPage extends StatefulWidget {
   @override
   _FormPageState createState() => _FormPageState();
@@ -18,14 +17,19 @@ class _FormPageState extends State<FormPage> {
 
   String email;
   String password;
-  var _valueFromShowNotification = true;
+  var _valueFromShowNotification = false;
   TriggerAndroid _triggerAndroid = new BaseTrigger();
 
   void _formSubmission() async {
-    if (_triggerAndroid.validateAndSave(formKey)) {
+    if ( _triggerAndroid.validateAndSave(formKey)) {
+      //Response from native side
       var result = await _triggerAndroid.showNotification(email);
+
       setState(() {
+        //clear the form fields
         formKey.currentState.reset();
+
+        //change snackBar state
         _valueFromShowNotification = result;
       });
     }
@@ -70,8 +74,9 @@ class _FormPageState extends State<FormPage> {
                     //Show snackBar if native side sends bool true after displaying notification
                     if (_valueFromShowNotification) {
                       _scaffoldKey.currentState.showSnackBar(SnackBar(
-                        content: Text("Yay ! A snack bar"),
+                        content: Text("Yay! Snack Bar."),
                         duration: Duration(seconds: 5),
+                        backgroundColor: Colors.blueGrey,
                       ));
                     }
                   },

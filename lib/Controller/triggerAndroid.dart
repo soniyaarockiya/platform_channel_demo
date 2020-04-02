@@ -15,6 +15,7 @@ class BaseTrigger implements TriggerAndroid {
     print("Show notification method invoked in flutter");
     bool androidResult = await _platform
         .invokeMethod("showAndroidNotification", {"text": email});
+    print("$androidResult..........................................");
     return androidResult;
   }
 
