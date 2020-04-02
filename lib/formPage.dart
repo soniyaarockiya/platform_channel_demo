@@ -21,17 +21,28 @@ class _FormPageState extends State<FormPage> {
   TriggerAndroid _triggerAndroid = new BaseTrigger();
 
   void _formSubmission() async {
-    if ( _triggerAndroid.validateAndSave(formKey)) {
+    if (_triggerAndroid.validateAndSave(formKey)) {
       //Response from native side
       var result = await _triggerAndroid.showNotification(email);
-
       setState(() {
         //clear the form fields
         formKey.currentState.reset();
-
         //change snackBar state
         _valueFromShowNotification = result;
       });
+
+      //Show snackBar if native side sends bool true after displaying notification
+      showSnackBar();
+    }
+  }
+
+  void showSnackBar() {
+    if (_valueFromShowNotification) {
+      _scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text("Yay! Snack Bar."),
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.blueGrey,
+      ));
     }
   }
 
@@ -70,15 +81,6 @@ class _FormPageState extends State<FormPage> {
                   onPressed: () {
                     //First validate the form
                     _formSubmission();
-
-                    //Show snackBar if native side sends bool true after displaying notification
-                    if (_valueFromShowNotification) {
-                      _scaffoldKey.currentState.showSnackBar(SnackBar(
-                        content: Text("Yay! Snack Bar."),
-                        duration: Duration(seconds: 5),
-                        backgroundColor: Colors.blueGrey,
-                      ));
-                    }
                   },
                   child: Text(
                     'Login',
