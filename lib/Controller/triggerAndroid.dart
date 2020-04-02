@@ -1,18 +1,22 @@
 import 'package:flutter/services.dart';
 
 abstract class TriggerAndroid {
-  Future<void> showNotification();
+  Future<bool> showNotification(String email);
   bool validateAndSave(formKey);
 }
 
 class BaseTrigger implements TriggerAndroid {
+
   static const _platform = const MethodChannel("Notifications");
+  bool androidResult = false;
 
-  Future<void> showNotification() async{
+
+  Future<bool> showNotification(String email) async {
     print("Show notification method invoked in flutter");
-    await _platform.invokeMethod("showAndroidNotification");
+    bool androidResult = await _platform
+        .invokeMethod("showAndroidNotification", {"text": email});
+    return androidResult;
   }
-
 
   bool validateAndSave(formKey) {
     final form = formKey.currentState;
@@ -24,9 +28,4 @@ class BaseTrigger implements TriggerAndroid {
       return false;
     }
   }
-
-
-
-
-
 }

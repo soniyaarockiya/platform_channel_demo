@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'Controller/triggerAndroid.dart';
+
+//REFERENCE :
+//https://flutter.dev/docs/development/platform-integration/platform-channels
+// https://www.youtube.com/watch?v=pwulMxlhdw8  ------- platform channel with android toast
+//https://www.youtube.com/watch?v=Qo2IxY9eDhw  ------- android notifications with channel for android 8.0 and above
+
 
 class FormPage extends StatefulWidget {
   @override
@@ -9,32 +14,28 @@ class FormPage extends StatefulWidget {
 
 class _FormPageState extends State<FormPage> {
   final formKey = new GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   String email;
   String password;
-
-  //Trigger obj
+  var _valueFromShowNotification = true;
   TriggerAndroid _triggerAndroid = new BaseTrigger();
 
   void _formSubmission() async {
     if (_triggerAndroid.validateAndSave(formKey)) {
+      var result = await _triggerAndroid.showNotification(email);
       setState(() {
         formKey.currentState.reset();
+        _valueFromShowNotification = result;
       });
-      await _triggerAndroid.showNotification();
-
-      //clear form after submission
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Main Flutter Screen'),
-        centerTitle: true,
-      ),
+      key: _scaffoldKey,
+      appBar: AppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.0),
         child: Form(
@@ -46,7 +47,6 @@ class _FormPageState extends State<FormPage> {
               TextFormField(
                 decoration: InputDecoration(
                   hintText: "Email",
-//                  labelText: "Enter your email"
                 ),
                 validator: (value) =>
                     value.isEmpty ? 'Email cant be empty' : null,
@@ -55,19 +55,31 @@ class _FormPageState extends State<FormPage> {
               TextFormField(
                 obscureText: true,
                 decoration: InputDecoration(
-//                    labelText: "Enter your email",
                   hintText: "Password",
                 ),
                 validator: (value) =>
-                    value.isEmpty ? 'pass word cant be empty' : null,
+                    value.isEmpty ? 'Password cant be empty' : null,
                 onSaved: (value) => password = value,
               ),
-              RaisedButton(
-                onPressed: _formSubmission,
-                child: Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 20.0,
+              Builder(
+                builder: (context) => RaisedButton(
+                  onPressed: () {
+                    //First validate the form
+                    _formSubmission();
+
+                    //Show snackBar if native side sends bool true after displaying notification
+                    if (_valueFromShowNotification) {
+                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                        content: Text("Yay ! A snack bar"),
+                        duration: Duration(seconds: 5),
+                      ));
+                    }
+                  },
+                  child: Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                    ),
                   ),
                 ),
               ),
